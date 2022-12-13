@@ -1,6 +1,6 @@
 ﻿{
     "tasks": [
-        { "id":1, "name":"Sveika, pasaule!", "task":"Uzraksti kodu, kurš izvada tekstu \"Sveika, pasaule!\"", "code":"print()", "check":"Sveika, pasaule!" },
+        { "id":1, "name":"Sveika, pasaule!", "task":"Uzraksti kodu, kurš izvada tekstu \"Sveika, pasaule!\"", "code":"print("test")", "check":"Sveika, pasaule!" },
         { "id":2, "name":"Sveiciens no Python", "task":"Uzraksti kodu, kurš izvada tekstu \"Sveiciens no Python!\"", "code":"", "check":"Sveiciens no Python!" },
         { "id":3, "name":"Summētājs", "task":"Uzraksti kodu, kurš ļauj ievadīt 2 skaitļus un izvada to summu", "code":"a = input()\nb = ", "input":"2\n3", "check":"5" }
     ]
