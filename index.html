@@ -3,8 +3,8 @@
     <head>
         <meta charset="utf-8">
         <title>Python uzevumi</title>
-        <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css">
-        <!--<script defer src="https://pyscript.net/latest/pyscript.js"></script> load only when button pressed so I can load page without waiting for python-->
+        <link rel="stylesheet" href="pyscript.css">
+        <!--<script defer src="pyscript.js"></script> load only when button pressed so I can load page without waiting for python-->
         <script src="ace/ace.js"></script>
         <script src="ace/ext-language_tools.js"></script>
         <style>
@@ -29,7 +29,7 @@
         <div style="border: 1px solid blue;" id="code">print("Hello, World!")</div>
         <button id="btnRun"    onclick="run();" disabled>Izpildīt (Ctrl+Enter)</button>
         <button id="btnPython" onclick="loadPyhon();">Ieslēgt Python</button>
-        <div style="border: 1px solid black;">Te tiks izvadīti dati</div>
+        <!--<div style="border: 1px solid black;" id="output">Te tiks izvadīti dati</div>-->
         <!--
         <py-script output="output" style="border: 1px solid red;">
         </py-script>
@@ -54,8 +54,17 @@
             // idea from https://dmitripavlutin.com/fetch-with-json/
             var tasksList;
             async function loadConfig() {
+                /*
                 var response = await fetch('./python_uzdevumi.json');
                 var config = await response.json();
+                */
+                var config = { "tasks": [
+                                    { "id":1, "name":"Sveika, pasaule!", "task":"Uzraksti kodu, kurš izvada tekstu \"Sveika, pasaule!\"", "code":"print(\"test\")", "check":"Sveika, pasaule!" },
+                                    { "id":2, "name":"Sveiciens no Python", "task":"Uzraksti kodu, kurš izvada tekstu \"Sveiciens no Python!\"", "code":"", "check":"Sveiciens no Python!" },
+                                    { "id":3, "name":"Summētājs", "task":"Uzraksti kodu, kurš ļauj ievadīt 2 skaitļus un izvada to summu", "code":"a = input()\nb = ", "input":"2\n3", "check":"5" }
+                                ]
+                            };
+                
                 tasksList = config["tasks"];
                 //console.log(config);
                 // add tasks to combobox
@@ -86,7 +95,7 @@
                 if (!pyScriptLoaded) {
                     var script = document.createElement("script");
                     script.type = "text/javascript";
-                    script.src = "https://pyscript.net/latest/pyscript.js";
+                    script.src = "pyscript.js";
                     document.getElementsByTagName("head")[0].appendChild(script);
                     pyScriptLoaded = true;
                 }
@@ -112,26 +121,30 @@
             //  https://www.jhanley.com/blog/pyscript-create-the-py-script-tag-at-runtime/
             //  https://community.anaconda.cloud/t/executing-dynamically-created-pyscript/21327/5
             var pyScriptTag;
-            if (pyScriptTag) {
-                pyScriptTag.remove();
-            }
             function run() {
-
+                if (pyScriptTag) {
+                    pyScriptTag.remove();
+                }
                 // clean output tag
-                document.getElementById("output").innerHTML = "";
+                //document.getElementById("output").innerHTML = "";
+                // while working on this PyScript changed its files and now print goes only to "terminal"!
+                // that is really bad that library authors change behavior of library without giving link to previous version
+console.log( document.getElementsByClassName("py-terminal")[0].innerHTML );
+                document.getElementsByClassName("py-terminal")[0].innerHTML = "";
                 // get the code to execute
                 var codeToRun = editor.getSession().getValue()
                 // create a py-script tag and execute it
                 var div = document.createElement("div");
-                div.innerHTML = "<py-script output='output' style='border: 1px solid green;'>"+
+                //div.innerHTML = "<py-script style='border: 1px solid green;'>"+
+                div.innerHTML = "<py-script style='display:none;'>"+
                 "from js import input\n"+
                 codeToRun+"</py-script>";
-//alert( div.innerHTML );
-                var pyScriptTag = div.firstElementChild;
+                    //alert( div.innerHTML );
+                pyScriptTag = div.firstElementChild;
                 document.body.appendChild(pyScriptTag);
                 try {
                     //alert( pyScriptTag.outerHTML );
-                    pyScriptTag.evaluate();
+                    //pyScriptTag.evaluate(); // now I am getting error while calling this. Yesterday it was working
                 } catch (error) {
                     console.error("Python error:");
                     console.error(error);
