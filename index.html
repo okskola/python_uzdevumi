@@ -3,8 +3,8 @@
     <head>
         <meta charset="utf-8">
         <title>Python uzevumi</title>
-        <link rel="stylesheet" href="pyscript.css">
-        <!--<script defer src="pyscript.js"></script> load only when button pressed so I can load page without waiting for python-->
+        <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css">
+        <!--<script defer src="https://pyscript.net/latest/pyscript.js"></script> load only when button pressed so I can load page without waiting for python-->
         <script src="ace/ace.js"></script>
         <script src="ace/ext-language_tools.js"></script>
         <style>
@@ -54,7 +54,7 @@
             // idea from https://dmitripavlutin.com/fetch-with-json/
             var tasksList;
             async function loadConfig() {
-                var response = await fetch('python_uzdevumi.json');
+                var response = await fetch('./python_uzdevumi.json');
                 var config = await response.json();
                 tasksList = config["tasks"];
                 //console.log(config);
@@ -86,7 +86,7 @@
                 if (!pyScriptLoaded) {
                     var script = document.createElement("script");
                     script.type = "text/javascript";
-                    script.src = "pyscript.js";
+                    script.src = "https://pyscript.net/latest/pyscript.js";
                     document.getElementsByTagName("head")[0].appendChild(script);
                     pyScriptLoaded = true;
                 }
