@@ -29,3 +29,6 @@ How to use it:
 - improve structure of the JavaScript code.
 #### Problems
 During writing of this code, the PyScript library changed so I had to adapt my code to use the new functionality. Before December 13, it was possible to redirect output of Pythons print() function to an HTML element, but now it always outputs to an element, created by PyScript itself. And I could not find the previous version of PyScipt library files. That is why I include current PyScript library code in my Github account, hoping that this will continue to work in future. This is also a reason why I did not made many tasks at the moment, because there is a risk that PyScript changes something again which will break my code and the time spend creating this will be useless. That is exactly what happened with ReplIt, when I had a classroom with exercises, but Replit changed the system and all my exercises are gone.
+#### Please!
+If You use this code, please add exercises to this repository!
+Ja Jūs lietojat šo kodu, tad lūdzu papildiniet uzdevumu krājumu!
