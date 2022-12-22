@@ -1,7 +1,10 @@
 ﻿{
     "tasks": [
-        { "id":1, "name":"Sveika, pasaule!", "task":"Uzraksti kodu, kurš izvada tekstu \"Sveika, pasaule!\"", "code":"print('test')", "check":"Sveika, pasaule!" },
-        { "id":2, "name":"Sveiciens no Python", "task":"Uzraksti kodu, kurš izvada tekstu \"Sveiciens no Python!\"", "code":"", "check":"Sveiciens no Python!" },
-        { "id":3, "name":"Summētājs", "task":"Uzraksti kodu, kurš ļauj ievadīt 2 skaitļus un izvada to summu", "code":"a = input()\nb = ", "input":"2\n3", "check":"5" }
+        { "id":1, "name":"Sveika, pasaule!", "task":"Uzraksti kodu, kurš izvada tekstu \"Sveika, pasaule!\"", "code":"print()", "check":"Sveika, pasaule!\n" },
+        { "id":2, "name":"Sveiciens no Python", "task":"Uzraksti kodu, kurš izvada tekstu \"Sveiciens no Python!\"", "code":"", "check":"Sveiciens no Python!\n" },
+        { "id":3, "name":"Summētājs", "task":"Uzraksti kodu, kurš ļauj ievadīt 2 skaitļus un izvada to summu", "code":"a = input()\nb = input()\nprint( a )\nprint( b )", "input":"2\n3", "check":"5\n" },
+        { "id":4, "name":"Summētājs (testēšanai)", "task":"Uzraksti kodu, kurš ļauj ievadīt 2 skaitļus un izvada to summu", "code":"a = int(input())\nb = int(input())\nprint( a+b )", "input":"2\n3", "check":"5\n" },
+        { "id":5, "name":"Cikls", "task":"Uzraksti kodu, kurš izvada konsolē visus veselos skaitļus no 2 līdz 7", "code":"for i in range(5):\n    print(i)", "check":"2\n3\n4\n5\n6\n7\n" },
+        { "id":6, "name":"Cikls2", "task":"Uzraksti kodu, kurš piedāvā ievadīt divus veselus skaitļus un izvada visus skaitļus no mazākā līdz lielākajam", "code":"a = int(input())\nb = int(input())\nfor i in range(5):\n    print(i)", "input":"8\n6\n", "check":"8\n7\n6\n" }
     ]
 }

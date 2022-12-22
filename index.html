@@ -23,12 +23,14 @@
             <option value=""></option>
         </select>
         <div style="border: 1px solid black;">
-            Uzdevuma teksts: <span id="task"></span>
+            Uzdevuma teksts:<br> <span id="task"></span>
         </div>
 
-        <div style="border: 1px solid blue;" id="code">print("Hello, World!")</div>
+        <div style="border: 1px solid blue;" id="code"></div> <!-- print("Hello, World!") # Šis ir koda piemērs -->
         <button id="btnRun"    onclick="run();" disabled>Izpildīt (Ctrl+Enter)</button>
         <button id="btnPython" onclick="loadPyhon();">Ieslēgt Python</button>
+        <button id="btnPython" onclick="clearPrograms();">Dzēst visu programmu kodus</button>
+        <div style="border: 1px solid blue;" id="result">Rezultāts: </div>
         <!--<div style="border: 1px solid black;" id="output">Te tiks izvadīti dati</div>-->
         <!--
         <py-script output="output" style="border: 1px solid red;">
@@ -51,20 +53,34 @@
                     //fetch('./python_uzdevumi.json')
                     //    .then((response) => response.json())
                     //    .then((json) => console.log(json));
+
+            var tasksList; // array of tasks (populated from JSON)
+            var inp = ""; // store input for current task
+            var inpn = 0; // current line to return to input() function
+            var out = ""; // store expected output for current task
+            var currId = null;
+
+            if( localStorage.getItem("programs") === null ) {
+                var programs = [];
+            } else {
+                    programs = JSON.parse(localStorage.programs);
+            }
+
             // idea from https://dmitripavlutin.com/fetch-with-json/
-            var tasksList;
             async function loadConfig() {
-                /*
+
                 var response = await fetch('./python_uzdevumi.json');
                 var config = await response.json();
-                */
+
+                /*
                 var config = { "tasks": [
                                     { "id":1, "name":"Sveika, pasaule!", "task":"Uzraksti kodu, kurš izvada tekstu \"Sveika, pasaule!\"", "code":"print(\"test\")", "check":"Sveika, pasaule!" },
                                     { "id":2, "name":"Sveiciens no Python", "task":"Uzraksti kodu, kurš izvada tekstu \"Sveiciens no Python!\"", "code":"", "check":"Sveiciens no Python!" },
                                     { "id":3, "name":"Summētājs", "task":"Uzraksti kodu, kurš ļauj ievadīt 2 skaitļus un izvada to summu", "code":"a = input()\nb = ", "input":"2\n3", "check":"5" }
                                 ]
                             };
-                
+                */
+
                 tasksList = config["tasks"];
                 //console.log(config);
                 // add tasks to combobox
@@ -84,9 +100,42 @@
 
             // user selected a task
             function newTask() {
+                // save current code to localstorage
+                if( currId !== null ) {
+                    var codeToRun = editor.getSession().getValue();
+                    programs[currId] = codeToRun;
+                    localStorage.setItem("programs", JSON.stringify(programs) );
+                }
+
+                // get task from combobox
                 var taskInd = document.getElementById("tasks").value;
+                if( taskInd == "" ){ // if empty task selected, return empty editor
+                    editor.getSession().setValue("");
+                    document.getElementById("task").innerHTML = "";
+                    currId = null;
+                    return;
+                }
+                // show task text
                 document.getElementById("task").innerHTML = tasksList[taskInd]["task"];
-                editor.getSession().setValue(tasksList[taskInd]["code"], -1)
+                // depending of local storage and array, display stored or default program
+                currId = tasksList[taskInd]["id"];
+                //alert( programs[currId] );
+                if( programs[currId] == null )
+                    editor.getSession().setValue(tasksList[taskInd]["code"], -1)
+                else
+                    editor.getSession().setValue(programs[currId]);
+                // remember input and expected output
+                if( "input" in tasksList[taskInd] )
+                    inp = tasksList[taskInd]["input"].split("\n");
+                else
+                    inp = [""];
+                inpn = 0;
+                out = tasksList[taskInd]["check"];
+
+                // clear results from screen
+                var elR = document.getElementById("result");
+                elR.innerHTML = "Rezultāts:";
+                elR.style.backgroundColor = "";
             }
 
             // load py-script (if its loaded togherer with page, it makes loading of page really slow)
@@ -114,7 +163,11 @@
 
             // input emulation
             function input(text) {
-                return "abc";
+                //return "abc";
+                if( inpn < inp.length )
+                    return inp[inpn++];
+                else
+                    return "Vairāk datu nav"
             }
 
             // Ideas from:
@@ -122,17 +175,30 @@
             //  https://community.anaconda.cloud/t/executing-dynamically-created-pyscript/21327/5
             var pyScriptTag;
             function run() {
+                inpn = 0;
+                var elR = document.getElementById("result");
+                elR.innerHTML = "Rezultāts: ... gaidi 1 sekundi ...";
+                elR.style.backgroundColor = "";
+
                 if (pyScriptTag) {
                     pyScriptTag.remove();
                 }
                 // clean output tag
                 //document.getElementById("output").innerHTML = "";
                 // while working on this PyScript changed its files and now print goes only to "terminal"!
-                // that is really bad that library authors change behavior of library without giving link to previous version
-console.log( document.getElementsByClassName("py-terminal")[0].innerHTML );
+                // that is really bad that library authors change behavior of library without giving link to previous version of the library
+                // and because of that breaking other peoples code
+//console.log( document.getElementsByClassName("py-terminal")[0].innerHTML );
                 document.getElementsByClassName("py-terminal")[0].innerHTML = "";
                 // get the code to execute
                 var codeToRun = editor.getSession().getValue()
+
+                // save code to localstorage
+                if( currId !== null ) {
+                    programs[currId] = codeToRun;
+                    localStorage.setItem("programs", JSON.stringify(programs) );
+                }
+
                 // create a py-script tag and execute it
                 var div = document.createElement("div");
                 //div.innerHTML = "<py-script style='border: 1px solid green;'>"+
@@ -142,13 +208,44 @@ console.log( document.getElementsByClassName("py-terminal")[0].innerHTML );
                     //alert( div.innerHTML );
                 pyScriptTag = div.firstElementChild;
                 document.body.appendChild(pyScriptTag);
+                setTimeout( check, 1000 );
+                /* // now I am getting error while calling this, it was working yesterday :( :( :(
                 try {
-                    //alert( pyScriptTag.outerHTML );
-                    //pyScriptTag.evaluate(); // now I am getting error while calling this. Yesterday it was working
+                    alert( pyScriptTag.outerHTML );
+                    pyScriptTag.evaluate();
                 } catch (error) {
                     console.error("Python error:");
                     console.error(error);
                 }
+                */
+            }
+
+            function check() {
+                // get python ouput
+                var testout = document.getElementsByClassName("py-terminal")[0].innerHTML;
+                // replace <br> with newlines
+                testoutgood = testout.replaceAll("<br>", "\n");
+                /*
+                    console.log("---");
+                    for( var i=0; i<testoutgood.length; i++ )
+                        console.log( testoutgood.charCodeAt(i) );
+                    console.log("---");
+                */
+                // display result
+                var elR = document.getElementById("result");
+                if( testoutgood == out ) {
+                    elR.innerHTML = "Rezultāts: Pareizi";
+                    elR.style.backgroundColor = "#ddffcc";
+                } else {
+                    elR.innerHTML = "Rezultāts: Nepareizi";
+                    elR.style.backgroundColor = "#ffcccc";
+                }
+            }
+
+            // clean localstorage
+            function clearPrograms() {
+                programs = [];
+                localStorage.removeItem("programs");
             }
         </script>
 
